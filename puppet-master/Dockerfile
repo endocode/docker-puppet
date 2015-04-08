@@ -68,8 +68,8 @@ RUN chmod +x /etc/service/nginx/run
 RUN rm -f /etc/service/sshd/down
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
-# Expose Puppet Master port
-EXPOSE 8140
+# Expose Puppet Master port and Icinga2 port
+EXPOSE [8140,5665]
 
 # use baseimage's init system
 CMD ["/sbin/my_init"]

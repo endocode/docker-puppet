@@ -17,9 +17,13 @@ ADD conf/sshd/sshd_config /etc/ssh/sshd_config
 # Fixes Docker Automated Build problem
 RUN ln -s -f /bin/true /usr/bin/chfn
 
+COPY icinga.key /tmp/icinga.key
+RUN echo "deb http://packages.icinga.org/ubuntu icinga-trusty main" > /etc/apt/sources.list.d/icinga.list
+RUN apt-key add /tmp/icinga.key
+
 # Install tools
 RUN apt-get update -q 2 && DEBIAN_FRONTEND=noninteractive \
-    apt-get install -y ca-certificates > /dev/null
+    apt-get install -y ca-certificates icinga2 > /dev/null
 
 # Install Puppet Labs Repository for Trusty
 RUN curl -o puppet.deb -s https://apt.puppetlabs.com/puppetlabs-release-trusty.deb && \
@@ -45,6 +49,8 @@ RUN chmod +x /sbin/run-puppet-agent
 # Enable sshd
 RUN rm -f /etc/service/sshd/down
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+EXPOSE 5665
 
 # Use the runit init system.
 CMD ["/sbin/my_init"]
